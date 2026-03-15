@@ -14,6 +14,8 @@ Both are important for operating **multi-agent systems** reliably at scale.
 
 In this blog, we will build all the core architectural layers needed to deploy a production-ready agentic system, **so teams can confidently deploy AI agents in their own infrastructure or for their clients.**
 
+**Inspired by** the architecture described in [production-grade-agentic-system](https://github.com/FareedKhan-dev/production-grade-agentic-system) by Fareed Khan.
+
 You can clone the repo:
 
 ```bash
@@ -3103,6 +3105,28 @@ Unlike traditional software where unit tests pass or fail deterministically, AI 
 An update to your system prompt might fix one edge case but break five others. Developers need a way to continuously evaluate the performance of their AI agents in production-like settings. This way they can catch regressions early before they impact real users.
 
 We normally build an **Evaluation Framework** alongside with codebase. We will implement an “LLM-as-a-Judge” system that automatically grades our agent performance by analyzing traces from `Langfuse`.
+
+#### Setup environment to run LLM-as-a-Judge
+
+1. **Create env file** (if you don't have one):
+   - Copy `.env.example` to `.env.development`: `cp .env.example .env.development`
+   - Or let `source scripts/set_env.sh development` create it from `.env.example`.
+
+2. **Required variables** in `.env.development` (or `.env.<ENV>`):
+   - `OPENAI_API_KEY` – used by the Judge LLM (or set `EVALUATION_API_KEY` to use a different key).
+   - `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` – to fetch traces and push scores.
+
+3. **Optional evaluation variables** (see `.env.example`):
+   - `EVALUATION_API_KEY` – if unset, falls back to `OPENAI_API_KEY`.
+   - `EVALUATION_BASE_URL` – default `https://api.openai.com/v1`.
+   - `EVALUATION_LLM` – Judge model (default from settings, e.g. `gpt-4o`).
+   - `EVALUATION_SLEEP_TIME` – seconds between trace evaluations (default `10`).
+
+4. **Install and run** (from project root):
+   - `make install` (or `uv sync`)
+   - **Interactive:** `make eval` or `make eval ENV=development`
+   - **Quick (no prompts):** `make eval-quick`
+   - **No JSON report:** `make eval-no-report`
 
 ### <a id="9e4a"></a>**LLM-as-a-Judge**
 
