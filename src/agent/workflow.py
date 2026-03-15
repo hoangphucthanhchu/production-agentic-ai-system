@@ -338,7 +338,9 @@ class LangGraphAgent:
             )
             return self.__process_messages(response["messages"])
         except Exception as e:
-            logger.error(f"Error getting response: {str(e)}")
+            logger.error("Error getting response", error=str(e), session_id=session_id)
+            # Re-raise so the API layer can return a proper HTTP error
+            raise
 
     async def get_stream_response(
         self, messages: list[Message], session_id: str, user_id: Optional[str] = None
@@ -356,9 +358,7 @@ class LangGraphAgent:
         config = {
             "configurable": {"thread_id": session_id},
             "callbacks": [
-                CallbackHandler(
-                    environment=settings.ENVIRONMENT.value, debug=False, user_id=user_id, session_id=session_id
-                )
+                CallbackHandler()
             ],
             "metadata": {
                 "user_id": user_id,
