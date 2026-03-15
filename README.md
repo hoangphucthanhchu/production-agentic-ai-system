@@ -19,8 +19,8 @@ In this blog, we will build all the core architectural layers needed to deploy a
 You can clone the repo:
 
 ```bash
-git clone https://github.com/FareedKhan-dev/production-grade-agentic-system
-cd production-grade-agentic-system
+git clone https://github.com/hoangphucthanhchu/production-agentic-ai-system
+cd production-agentic-ai-system
 ```
 
 ## Table of Content
