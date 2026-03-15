@@ -14,7 +14,7 @@ ENV APP_ENV=${APP_ENV} \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100
 
-# Install system dependencies
+# Install system dependencies and tools
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
@@ -22,9 +22,11 @@ RUN apt-get update && apt-get install -y \
     && pip install uv \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy pyproject.toml first to leverage Docker cache
-COPY pyproject.toml .
-RUN uv venv && . .venv/bin/activate && uv pip install -e .
+# Copy dependency metadata first to leverage Docker cache
+COPY pyproject.toml uv.lock ./
+
+# Install dependencies using uv (uv-managed env, không tự tạo .venv thủ công)
+RUN uv sync --frozen --no-dev
 
 # Copy the application
 COPY . .
@@ -45,6 +47,6 @@ EXPOSE 8000
 # Log the environment we're using
 RUN echo "Using ${APP_ENV} environment"
 
-# Command to run the application
+# Command to run the application via uv
 ENTRYPOINT ["/app/scripts/docker-entrypoint.sh"]
-CMD ["/app/.venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"] 
+CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
