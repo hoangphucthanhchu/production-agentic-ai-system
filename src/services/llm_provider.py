@@ -6,6 +6,7 @@ from typing import (
     List,
     Optional,
 )
+import logging
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import BaseMessage
@@ -222,11 +223,14 @@ class LLMService:
             logger.error("model_switch_failed", error=str(e))
             return False
 
+    # Use a standard logging logger for tenacity retries to avoid incompatibility
+    _tenacity_logger = logging.getLogger("llm_retry")
+
     @retry(
         stop=stop_after_attempt(settings.MAX_LLM_CALL_RETRIES),
         wait=wait_exponential(multiplier=1, min=2, max=10),
         retry=retry_if_exception_type((RateLimitError, APITimeoutError, APIError)),
-        before_sleep=before_sleep_log(logger, "WARNING"),
+        before_sleep=before_sleep_log(_tenacity_logger, logging.WARNING),
         reraise=True,
     )
     async def _call_llm_with_retry(self, messages: List[BaseMessage]) -> BaseMessage:

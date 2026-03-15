@@ -29,12 +29,13 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app/src
+      - ./src:/app/src
       - ./logs:/app/logs
     env_file:
       - .env.${APP_ENV:-development}
     environment:
       - APP_ENV=${APP_ENV:-development}
+      - POSTGRES_HOST=db
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-supersecretkeythatshouldbechangedforproduction}
     depends_on:
       db:
