@@ -1698,6 +1698,8 @@ If a provider has a major outage, `tenacity` rotates to backup models. This make
 
 ## <a id="2767"></a>Multi-Agentic Architecture
 
+The stack (orchestration, memory, checkpointing, tools, observability) is **designed to scale to multi-agent** workflows—e.g. multiple subgraphs or specialized agents. The repo currently implements **one LangGraph agent** (chat + tool calling + long-term memory) as a **reference implementation / mock** until a concrete multi-agent production use case is added.
+
 Now we will start working on our stateful AI Agentic system using **LangGraph**. Unlike linear chains (Input →→ LLM →→ Output), LangGraph allows us to build **Stateful Agents**.
 
 These agents can loop, retry, call tools, remember past interactions, and persist their state into a database so they can pick up exactly where they left off — even if the server restarts.
